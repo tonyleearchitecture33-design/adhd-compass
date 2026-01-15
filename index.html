@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADHD Compassion Compass</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const Heart = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+        const Brain = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/></svg>;
+        const Coffee = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></svg>;
+        const Zap = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+        const Cloud = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>;
+        const CheckCircle = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+        const Circle = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/></svg>;
+        const Trash2 = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
+        const Plus = (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+
+        function App() {
+            const [mood, setMood] = useState(null);
+            const [tasks, setTasks] = useState([]);
+            const [input, setInput] = useState('');
+            const [dump, setDump] = useState('');
+            const [showDump, setShowDump] = useState(false);
+            const [toasts, setToasts] = useState([]);
+            const [showPause, setShowPause] = useState(false);
+            const [wins, setWins] = useState([]);
+            const [timer, setTimer] = useState(0);
+            const [breakdown, setBreakdown] = useState('');
+            const [steps, setSteps] = useState([]);
+
+            const moods = [
+                { id: 'overwhelmed', label: 'Overwhelmed', icon: Cloud, color: 'bg-gray-500' },
+                { id: 'stuck', label: 'Stuck', icon: Brain, color: 'bg-purple-500' },
+                { id: 'scattered', label: 'Scattered', icon: Zap, color: 'bg-yellow-500' },
+                { id: 'okay', label: 'Doing Okay', icon: Heart, color: 'bg-green-500' },
+                { id: 'hyperfocus', label: 'Hyperfocused', icon: Coffee, color: 'bg-orange-500' },
+                { id: 'existing', label: 'Just Existing Mode', icon: Heart, color: 'bg-gradient-to-r from-rose-400 to-pink-500' }
+            ];
+
+            const messages = ["You are not your productivity.", "Rest is not laziness.", "Your worth isn't measured in tasks.", "Bad brain days pass.", "You're doing better than you think."];
+            const activities = ["Take 3 deep breaths", "Drink some water", "Look out a window", "Stretch your arms", "Notice 3 things", "Text someone", "Pet an animal", "Listen to music"];
+
+            useEffect(() => {
+                if (mood === 'hyperfocus' || mood === 'okay') {
+                    const t = setInterval(() => setTimer(p => p + 1), 1000);
+                    if (mood === 'hyperfocus') {
+                        const r = setInterval(() => toast(["💧 Water?", "🍎 Eat?", "🚽 Bathroom?", "👀 Rest?", "🧘 Stretch?"][Math.floor(Math.random() * 5)]), 1200000);
+                        return () => { clearInterval(t); clearInterval(r); };
+                    }
+                    return () => clearInterval(t);
+                } else {
+                    setTimer(0);
+                }
+            }, [mood]);
+
+            const toast = (m) => {
+                const id = Date.now();
+                setToasts(t => [...t, { id, m }]);
+                setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 5000);
+            };
+
+            const add = () => {
+                if (input.trim()) {
+                    setTasks([...tasks, { id: Date.now(), text: input, done: false }]);
+                    setInput('');
+                    if (mood === 'scattered') toast("⚡ Captured!");
+                }
+            };
+
+            const toggle = (id) => {
+                setTasks(tasks.map(t => {
+                    if (t.id === id && !t.done) {
+                        toast(`✨ "${t.text}" done!`);
+                        setWins([...wins, t.text]);
+                    }
+                    return t.id === id ? { ...t, done: !t.done } : t;
+                }));
+            };
+
+            const remove = (id) => {
+                const t = tasks.find(x => x.id === id);
+                setTasks(tasks.filter(x => x.id !== id));
+                toast(`Okay to let "${t.text}" go.`);
+            };
+
+            const breakIt = () => {
+                if (!breakdown.trim()) return;
+                const s = [`Gather for: ${breakdown}`, 'Set 10min timer', 'Start easiest', '2min break', 'Continue', 'Celebrate!'];
+                setSteps(s.map((text, i) => ({ id: Date.now() + i, text, done: false })));
+                toast('🎯 Breaking it down!');
+                setBreakdown('');
+            };
+
+            const toggleStep = (id) => {
+                setSteps(steps.map(s => {
+                    if (s.id === id && !s.done) toast('✨ Step done!');
+                    return s.id === id ? { ...s, done: !s.done } : s;
+                }));
+            };
+
+            const fmt = (s) => {
+                const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+                return h > 0 ? `${h}h ${m}m` : `${m}m ${sec}s`;
+            };
+
+            if (!mood) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6 flex items-center justify-center">
+                        <div className="max-w-2xl w-full">
+                            <h1 className="text-4xl font-bold text-center mb-2 text-gray-800">How are you feeling?</h1>
+                            <p className="text-center text-gray-600 mb-8">No wrong answers. Just honesty.</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                {moods.map(m => {
+                                    const Icon = m.icon;
+                                    return (
+                                        <button key={m.id} onClick={() => setMood(m.id)} className={`${m.color} text-white p-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all`}>
+                                            <Icon className="w-12 h-12 mx-auto mb-2" />
+                                            <div className="font-semibold">{m.label}</div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (mood === 'existing') {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-rose-100 to-purple-100 p-6">
+                        <div className="max-w-2xl mx-auto">
+                            <button onClick={() => setMood(null)} className="mb-4 text-gray-600">← Change</button>
+                            <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 text-center">
+                                <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4" />
+                                <h2 className="text-3xl font-bold mb-4 text-gray-800">You're Here. That's Enough.</h2>
+                                <p className="text-gray-600">Some days, just existing is the victory.</p>
+                            </div>
+                            <div className="bg-white rounded-2xl shadow-xl p-8 space-y-3">
+                                {activities.map((a, i) => (
+                                    <button key={i} onClick={() => { toast(`💝 ${a}`); setWins([...wins, a]); }} className="w-full p-4 bg-rose-50 hover:bg-rose-100 rounded-lg text-left">{a}</button>
+                                ))}
+                            </div>
+                            <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-xl p-8 text-white text-center mt-6">
+                                <p className="text-xl mb-2">Today's Reminder:</p>
+                                <p className="text-2xl font-bold">{messages[Math.floor(Math.random() * messages.length)]}</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const m = moods.find(x => x.id === mood);
+            const Icon = m.icon;
+            const isO = mood === 'overwhelmed', isH = mood === 'hyperfocus', isS = mood === 'stuck', isSc = mood === 'scattered', isOk = mood === 'okay';
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
+                    <div className="max-w-4xl mx-auto">
+                        <div className="flex justify-between mb-6">
+                            <button onClick={() => setMood(null)} className="text-gray-600">← Change</button>
+                            <button onClick={() => setShowPause(true)} className="bg-purple-500 text-white px-4 py-2 rounded-lg flex items-center gap-2"><Heart className="w-4 h-4" /> Compassion Pause</button>
+                        </div>
+                        <div className={`${m.color} text-white p-6 rounded-2xl shadow-lg mb-6 flex items-center gap-4`}>
+                            <Icon className="w-12 h-12" />
+                            <div className="text-2xl font-bold">{m.label}</div>
+                        </div>
+                        {!isH && !isS && !isSc && !isOk && (
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <button onClick={() => setShowDump(true)} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg flex items-center gap-3">
+                                    <Brain className="w-8 h-8 text-purple-500" />
+                                    <div className="text-left"><div className="font-semibold text-gray-800">Brain Dump</div></div>
+                                </button>
+                                <button onClick={() => toast(messages[Math.floor(Math.random() * messages.length)])} className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg flex items-center gap-3">
+                                    <Heart className="w-8 h-8 text-rose-500" />
+                                    <div className="text-left"><div className="font-semibold text-gray-800">Need Kindness</div></div>
+                                </button>
+                            </div>
+                        )}
+                        {isH && (
+                            <div className="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl shadow-xl p-8 mb-6 text-white">
+                                <div className="text-center mb-6">
+                                    <div className="text-6xl font-bold mb-2">{fmt(timer)}</div>
+                                    <div className="text-xl">In the zone</div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-3">
+                                    {[['💧', 'Water'], ['🍎', 'Snack'], ['🧘', 'Stretch']].map(([e, l]) => (
+                                        <button key={l} onClick={() => { toast(`${e} break!`); setWins([...wins, l]); }} className="bg-white/20 hover:bg-white/30 p-4 rounded-lg">
+                                            <div className="text-3xl mb-1">{e}</div><div className="text-sm">{l}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {isOk && (
+                            <div className="space-y-4 mb-6">
+                                <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-xl p-6 text-white flex justify-between">
+                                    <h3 className="text-2xl font-bold">Energy! ⚡</h3>
+                                    <div className="text-right"><div className="text-3xl font-bold">{fmt(timer)}</div></div>
+                                </div>
+                                <div className="bg-white p-6 rounded-xl shadow-md flex gap-2">
+                                    <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && add()} placeholder="What's the ONE thing?" className="flex-1 p-3 border-2 border-green-300 rounded-lg" />
+                                    <button onClick={add} className="bg-green-500 text-white px-8 rounded-lg">Add</button>
+                                </div>
+                            </div>
+                        )}
+                        {isS && (
+                            <div className="space-y-4 mb-6">
+                                <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-xl p-6 text-white">
+                                    <h3 className="text-2xl font-bold">Stuck? Let's break it down 🧩</h3>
+                                </div>
+                                <div className="bg-white p-6 rounded-xl shadow-md">
+                                    <div className="flex gap-2">
+                                        <input type="text" value={breakdown} onChange={e => setBreakdown(e.target.value)} onKeyDown={e => e.key === 'Enter' && breakIt()} placeholder="What are you stuck on?" className="flex-1 p-3 border-2 border-purple-300 rounded-lg" />
+                                        <button onClick={breakIt} className="bg-purple-500 text-white px-6 rounded-lg">Break Down</button>
+                                    </div>
+                                </div>
+                                {steps.length > 0 && (
+                                    <div className="bg-white p-6 rounded-xl shadow-md">
+                                        <h4 className="font-semibold mb-4">Tiny Steps:</h4>
+                                        {steps.map(s => (
